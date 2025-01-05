@@ -1,4 +1,4 @@
-package vn.hoidanit.jobhunter.domain;
+package vn.hoidanit.jobhunter.domain.Request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
