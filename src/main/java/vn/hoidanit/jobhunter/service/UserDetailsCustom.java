@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,14 +21,14 @@ public class UserDetailsCustom implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        vn.hoidanit.jobhunter.domain.User user = this.userService.handleGetUserByUsername(username);
-        if (user == null) {
+        Optional<vn.hoidanit.jobhunter.domain.User> user = this.userService.handleGetUserByUsername(username);
+        if (!user.isPresent()) {
             throw new UsernameNotFoundException("Username/password không hợp lệ");
         }
 
         return new User(
-                user.getEmail(),
-                user.getPassword(),
+                user.get().getEmail(),
+                user.get().getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
 
     }
