@@ -6,8 +6,8 @@ import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.ResUserDTO;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.Request.ResUserDTO;
+import vn.hoidanit.jobhunter.domain.Request.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.dto.Request.RequestUserUpdate;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.annotation.AppMessage;
