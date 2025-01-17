@@ -1,19 +1,21 @@
 package vn.hoidanit.jobhunter.domain.Request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.hoidanit.jobhunter.domain.Role;
 
 @Getter
 @Setter
+@JsonInclude(Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInResLogin {
-    private String email;
-    private String name;
+public class CompanyinUser {
+
     private long id;
-    private Role role;
+    private String name;
 
 }

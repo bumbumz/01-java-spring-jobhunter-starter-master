@@ -1,24 +1,15 @@
 package vn.hoidanit.jobhunter.domain;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -26,48 +17,31 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.service.TokenService;
-import vn.hoidanit.jobhunter.util.constant.GenderEnum;
+import vn.hoidanit.jobhunter.util.constant.LevelEnum;
+import vn.hoidanit.jobhunter.util.constant.ResumeEnum;
 
 @Entity
-@Table(name = "users")
-@Setter
+@Table(name = "resumes")
 @Getter
-@JsonInclude(Include.NON_NULL)
-public class User {
+@Setter
+public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    private String name;
-    @NotBlank(message = "Không được để trống email")
+    @NotBlank(message = "Không được để trống eami")
     private String email;
+    @NotBlank(message = "Không được để trống url")
 
-    @NotBlank(message = "Không được để trống password")
-
-    private String password;
-    private int age;
+    private String url;
 
     @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-    private String address;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private ResumeEnum status;
     private Instant createdAt;
-    private Instant updatedAt;
+
     private String createdBy;
+    private Instant updatedAt;
+
     private String updatedBy;
-
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Resume> resumes;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
 
     @PrePersist
     public void beforeCreate() {
@@ -86,5 +60,15 @@ public class User {
 
         this.updatedAt = Instant.now();
     }
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "job_id")
+    private Job job;
+
+    // Job - resume : 1 - N
 
 }

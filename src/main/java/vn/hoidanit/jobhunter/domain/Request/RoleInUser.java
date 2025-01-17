@@ -4,16 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.hoidanit.jobhunter.domain.Role;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInResLogin {
-    private String email;
-    private String name;
+public class RoleInUser {
     private long id;
-    private Role role;
+    private String name;
 
 }

@@ -48,6 +48,10 @@ public class TokenService {
     }
 
     public String createAccessToken(String email, ResLoginDTO dto) {
+        ResLoginDTO.UserInsideToken userToken = new ResLoginDTO.UserInsideToken(
+                dto.getUser().getEmail(),
+                dto.getUser().getName(),
+                dto.getUser().getId());
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
         List<String> listAuthority = new ArrayList<String>();
@@ -60,7 +64,7 @@ public class TokenService {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(email)
-            .claim("user", dto.getUser())
+            .claim("user", userToken)
             .claim("premission",listAuthority)
             .build();
 
@@ -70,6 +74,10 @@ public class TokenService {
     }
 
     public String createRefreshToken(String email, ResLoginDTO resLogin) {
+        ResLoginDTO.UserInsideToken userToken= new ResLoginDTO.UserInsideToken(
+            resLogin.getUser().getEmail(),
+            resLogin.getUser().getName(),
+            resLogin.getUser().getId());
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
 
@@ -78,7 +86,7 @@ public class TokenService {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(email)
-            .claim("user", resLogin.getUser())
+            .claim("user", userToken)
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -89,23 +97,19 @@ public class TokenService {
 public Jwt checkValidRefeshToken(String token) {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
                 getSecretKey()).macAlgorithm(TokenService.JWT_ALGORITHM).build();
-       
             try {
                 return jwtDecoder.decode(token);
             } catch (Exception e) {
                 System.out.println(">>> JWT error: " + e.getMessage());
                 throw e;
             }
-        
+
     }
      private SecretKey getSecretKey() {
         byte[] keyBytes = Base64.from(jwtKey).decode();
         return new SecretKeySpec(keyBytes, 0, keyBytes.length,
                 JWT_ALGORITHM.getName());
     }
-
-
-    
     /**
      * Get the login of the current user.
      *

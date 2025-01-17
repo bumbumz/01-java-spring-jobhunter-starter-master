@@ -24,7 +24,25 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleIdInvalidException(IdInvalidException e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setError(e.getMessage());
+        response.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+    }
+
+    @ExceptionHandler(value = PermissionException.class)
+    public ResponseEntity<RestResponse<Object>> handlePermissionException(PermissionException e) {
+        RestResponse<Object> response = new RestResponse<>();
+        response.setStatusCode(HttpStatus.FORBIDDEN.value());
+        response.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+    }
+
+    @ExceptionHandler(value = UploadExceptiion.class)
+    public ResponseEntity<RestResponse<Object>> handleUploadExceptiion(UploadExceptiion e) {
+        RestResponse<Object> response = new RestResponse<>();
+        response.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -33,7 +51,7 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleMissingRequestCookieException(MissingRequestCookieException e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setError("lỗi liên quan đến cookie ");
+        response.setMessage("lỗi liên quan đến cookie ");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -46,7 +64,7 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleExceptionToken(Exception e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setError(e.getMessage());
+        response.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -56,7 +74,7 @@ public class GlobalException {
             NoResourceFoundException e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.NOT_FOUND.value());
-        response.setError("Không tồn tại url này");
+        response.setMessage("Không tồn tại url này");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -66,7 +84,7 @@ public class GlobalException {
             NullPointerException e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.NOT_FOUND.value());
-        response.setError("lỗi cứu pháp");
+        response.setMessage("lỗi cứu pháp");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -76,7 +94,7 @@ public class GlobalException {
             MethodArgumentTypeMismatchException e) {
         RestResponse<Object> response = new RestResponse<>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setError("Lỗi giá trị truyền vào ở url");
+        response.setMessage("Lỗi giá trị truyền vào ở url");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
     }
@@ -94,6 +112,15 @@ public class GlobalException {
         res.setMessage(errors.size() > 1 ? errors : errors.get(0));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Internal Server Error");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
 
 }

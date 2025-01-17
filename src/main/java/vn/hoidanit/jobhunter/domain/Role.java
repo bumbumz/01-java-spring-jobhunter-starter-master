@@ -1,23 +1,19 @@
 package vn.hoidanit.jobhunter.domain;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -26,48 +22,44 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.service.TokenService;
-import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Entity
-@Table(name = "users")
-@Setter
+@Table(name = "roles")
 @Getter
-@JsonInclude(Include.NON_NULL)
-public class User {
+@Setter
+public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "Không được để trống trường name")
     private String name;
-    @NotBlank(message = "Không được để trống email")
-    private String email;
 
-    @NotBlank(message = "Không được để trống password")
+    private String description;
 
-    private String password;
-    private int age;
+    private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-    private String address;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
+    // ================================================================================
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "roles" })
+    @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private List<Permission> permissions;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    // mappedBy = "role" là tên thuộc tính đã cầu hình ở User
     @JsonIgnore
-    List<Resume> resumes;
+    private List<User> users;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    // ==============================================================================
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
+
+    private String createdBy;
+
+    private String updatedBy;
 
     @PrePersist
     public void beforeCreate() {
@@ -86,5 +78,15 @@ public class User {
 
         this.updatedAt = Instant.now();
     }
+
+    // id long
+    // name String
+    // description String
+    // active boolean
+    // createdAt Date
+    // createdBy String
+    // updatedAt Date
+    // updatedBy String
+    // permissions Array
 
 }

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Getter
@@ -31,5 +32,10 @@ public class ResUserDTO {
     private Instant createdAt;
 
     private String createdBy;
+    private RoleInUser role;
+    private CompanyinUser company;
+   
+
+    
 
 }

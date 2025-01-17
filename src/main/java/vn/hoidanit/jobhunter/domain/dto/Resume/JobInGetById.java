@@ -1,19 +1,16 @@
-package vn.hoidanit.jobhunter.domain.Request;
+package vn.hoidanit.jobhunter.domain.dto.Resume;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.hoidanit.jobhunter.domain.Role;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInResLogin {
-    private String email;
-    private String name;
+public class JobInGetById {
     private long id;
-    private Role role;
+    private String name;
 
 }

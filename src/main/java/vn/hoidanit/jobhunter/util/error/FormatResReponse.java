@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.util.error;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -33,7 +34,12 @@ public class FormatResReponse implements ResponseBodyAdvice<Object> {
         int status = servletResponse.getStatus();
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(status);
-        if (body instanceof String) {
+        String path = request.getURI().getPath();
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
+            return body;
+        }
+
+        if (body instanceof String || body instanceof Resource) {
             return body;
         }
         if (status >= 400) {

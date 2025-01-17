@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.hoidanit.jobhunter.domain.Role;
+import vn.hoidanit.jobhunter.domain.Request.CompanyinUser;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Getter
@@ -33,5 +35,8 @@ public class RequestUserUpdate {
     private Instant createdAt;
     private Instant updatedAt;
     private String updatedBy;
+
+    private CompanyinUser company;
+    private Role role;
 
 }

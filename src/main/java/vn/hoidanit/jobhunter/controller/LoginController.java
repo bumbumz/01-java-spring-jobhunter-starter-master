@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.Request.ResLoginDTO;
+import vn.hoidanit.jobhunter.domain.Request.ResUserDTO;
 import vn.hoidanit.jobhunter.domain.Request.UserGetAccount;
 import vn.hoidanit.jobhunter.domain.Request.UserInResLogin;
 import vn.hoidanit.jobhunter.domain.dto.Request.RequestLoginDTO;
@@ -67,8 +70,14 @@ public class LoginController {
 
         ResLoginDTO res = new ResLoginDTO();
 
-        UserInResLogin user = new UserInResLogin(userInRes.getEmail(), userInRes.getName(), userInRes.getId());
+        UserInResLogin user = new UserInResLogin(
+                userInRes.getEmail(),
+                userInRes.getName(),
+                userInRes.getId(),
+                userInRes.getRole());
         res.setUser(user);
+
+        
         String access_token = this.tokenService.createAccessToken(authentication.getName(), res);
         res.setAccessToken(access_token);
         // tạo refesh token
@@ -99,6 +108,7 @@ public class LoginController {
             user.setEmail(currenUser.get().getEmail());
             user.setName(currenUser.get().getName());
             user.setId(currenUser.get().getId());
+            user.setRole(currenUser.get().getRole());
 
         }
         UserGetAccount res = new UserGetAccount();
@@ -119,7 +129,8 @@ public class LoginController {
 
         ResLoginDTO res = new ResLoginDTO();
 
-        UserInResLogin user = new UserInResLogin(isuser.getEmail(), isuser.getName(), isuser.getId());
+        UserInResLogin user = new UserInResLogin(isuser.getEmail(), isuser.getName(), isuser.getId(),
+                isuser.getRole() != null ? isuser.getRole() : null);
         res.setUser(user);
         String access_token = this.tokenService.createAccessToken(email, res);
         res.setAccessToken(access_token);
@@ -163,5 +174,12 @@ public class LoginController {
                 .body(null);
 
     }
+     @PostMapping("/auth/register")
+     public  ResponseEntity<ResUserDTO> registerUser(@Valid @RequestBody User userParam) throws IdInvalidException
+     {
+        ResUserDTO user = userService.createUser(userParam);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+     }
 
 }

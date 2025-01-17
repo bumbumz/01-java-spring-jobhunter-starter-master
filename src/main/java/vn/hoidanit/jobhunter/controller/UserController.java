@@ -59,9 +59,9 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody RequestUserUpdate param) throws IdInvalidException {
+    public ResponseEntity<?> updateUser( @RequestBody RequestUserUpdate param) throws IdInvalidException {
 
-        RequestUserUpdate users = userService.updateUser(param);
+        ResUserDTO users = userService.updateUser(param);
         return ResponseEntity.ok().body(users);
 
     }

@@ -14,11 +14,16 @@ import org.springframework.stereotype.Service;
 
 import com.turkraft.springfilter.boot.Filter;
 
+import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.Request.CompanyinUser;
 import vn.hoidanit.jobhunter.domain.Request.Meta;
 import vn.hoidanit.jobhunter.domain.Request.ResUserDTO;
 import vn.hoidanit.jobhunter.domain.Request.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.Request.RoleInUser;
 import vn.hoidanit.jobhunter.domain.dto.Request.RequestUserUpdate;
+import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
@@ -28,10 +33,18 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyRepository companyRepository;
+    private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            CompanyRepository companyRepository,
+            RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.companyRepository = companyRepository;
+        this.roleService = roleService;
     }
 
     public User checkIdUser(long id) throws IdInvalidException {
@@ -54,6 +67,14 @@ public class UserService {
 
         resUserDTO.setCreatedAt(user.getCreatedAt());
         resUserDTO.setCreatedBy(user.getCreatedBy());
+        resUserDTO.setCompany(
+                user.getCompany() != null
+                        ? new CompanyinUser(user.getCompany().getId(), user.getCompany().getName())
+                        : null);
+        resUserDTO.setRole(
+                user.getRole() != null
+                        ? new RoleInUser(user.getRole().getId(), user.getRole().getName())
+                        : null);
 
         return resUserDTO;
 
@@ -67,24 +88,56 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getCompany() != null) {
+            Optional<Company> company = this.companyRepository.findById(user.getCompany().getId());
 
+            user.setCompany(company.isPresent() ? company.get() : null);
+
+        
+        }
+        if(user.getRole()!=null)
+
+        {
+            Optional<Role> checkId= this.roleService.checkId( user.getRole().getId());
+            user.setRole(checkId.isPresent()?checkId.get():null);
+            
+        }
         User savedUser = userRepository.save(user);
+
         ResUserDTO resUserDTO = convertToResCreateUser(savedUser);
 
         return resUserDTO;
     }
 
-    public RequestUserUpdate updateUser(RequestUserUpdate param) throws IdInvalidException {
+
+    public ResUserDTO updateUser(RequestUserUpdate param) throws IdInvalidException {
 
         User user = this.checkIdUser(param.getId());
-        user.setName(param.getName());
+        if (param.getName() != null) {
+            user.setName(param.getName());
+        }
+
         user.setAge(param.getAge());
         user.setAddress(param.getAddress());
         user.setGender(param.getGender());
+        if (param.getCompany() != null) {
+            Optional<Company> company = this.companyRepository.findById(param.getCompany().getId());
+            if (!company.isPresent()) {
+                user.setCompany(null);
+            } else {
+                user.setCompany(company.get());
 
+            }
+
+        }
+
+        if (param.getRole() != null) {
+            Optional<Role> checkId = this.roleService.checkId(param.getRole().getId());
+            user.setRole(checkId.isPresent() ? checkId.get() : null);
+        }
         this.userRepository.save(user);
-
-        return param;
+        ResUserDTO resUserDTO = convertToResCreateUser(user);
+        return resUserDTO;
 
     }
 
@@ -103,17 +156,10 @@ public class UserService {
 
         res.setMeta(meta);
         List<ResUserDTO> resDTO = pageUser.getContent()
-                .stream().map(m -> new ResUserDTO(
-                        m.getId(),
-                        m.getName(),
-                        m.getEmail(),
-                        m.getAge(),
-                        m.getGender(),
-                        m.getAddress(),
-                        m.getCreatedAt(),
-                        m.getCreatedBy()))
-                .collect(Collectors.toList());
-        res.setResult(pageUser.getContent());
+                .stream().map(m -> this.convertToResCreateUser(m
+
+                )).collect(Collectors.toList());
+        res.setResult(resDTO);
 
         return res;
     }
