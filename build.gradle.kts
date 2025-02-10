@@ -6,7 +6,7 @@ plugins {
 
 }
 
-group = "vn.hoidanit"
+group = "vn.pcv"
 version = "0.0.1-SNAPSHOT"
 
 java {
